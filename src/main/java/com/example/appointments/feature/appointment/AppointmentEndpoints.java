@@ -7,6 +7,7 @@ public class AppointmentEndpoints {
 
     public static final String BASE = "/api/appointments";
     public static final String BY_ID = "/{id}";
+    public static final String SEARCH = "/search";
     public static final String CONFIRM = BY_ID + "/confirm";
     public static final String START = BY_ID + "/start";
     public static final String WAIT = BY_ID + "/wait";

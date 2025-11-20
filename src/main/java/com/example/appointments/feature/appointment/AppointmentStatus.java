@@ -1,5 +1,7 @@
 package com.example.appointments.feature.appointment;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.List;
 
 public enum AppointmentStatus {
@@ -9,6 +11,18 @@ public enum AppointmentStatus {
     IN_PROGRESS,
     CANCELLED,
     COMPLETED;
+
+    @JsonCreator
+    public static AppointmentStatus fromString(String value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return AppointmentStatus.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid status: " + value);
+        }
+    }
 
     public List<AppointmentStatus> canBeChangedFrom() {
         return switch (this) {

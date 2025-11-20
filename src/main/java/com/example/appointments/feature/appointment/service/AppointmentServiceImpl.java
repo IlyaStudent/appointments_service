@@ -8,6 +8,8 @@ import com.example.appointments.feature.appointment.exceptions.AppointmentNotFou
 import com.example.appointments.feature.appointment.exceptions.InvalidStateTransitionException;
 import com.example.appointments.feature.appointment.mapper.AppointmentMapper;
 import com.example.appointments.feature.appointment.repository.AppointmentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +32,15 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentResponse> getAllAppointments() {
-        List<Appointment> appointments = appointmentRepository.findAll();
-        return appointmentMapper.toResponseList(appointments);
+    public Page<AppointmentResponse> getAllAppointments(Pageable pageable) {
+        Page<Appointment> appointments = appointmentRepository.findAll(pageable);
+        return appointments.map(appointmentMapper::toResponse);
+    }
+
+    @Override
+    public Page<AppointmentResponse> searchAppointments(String query, Pageable pageable) {
+        Page<Appointment> appointments = appointmentRepository.searchByServiceNameOrClientName(query, pageable);
+        return appointments.map(appointmentMapper::toResponse);
     }
 
     @Override
