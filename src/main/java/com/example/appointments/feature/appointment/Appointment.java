@@ -8,8 +8,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -31,6 +33,7 @@ public class Appointment {
     private LocalDateTime dateTime;
 
     @Column(name = "duration", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(SqlTypes.BIGINT)
     private Duration duration;
 
     @Column(name = "price", nullable = false, precision = 12, scale = 2)
@@ -126,3 +129,4 @@ public class Appointment {
         return getClass().hashCode();
     }
 }
+
