@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/db.create_table_appointments.yaml
+  - changeSet:
+      id: create-table-appointments
+      author: codekitchen
+      comment: first liquibase migration
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            - tableExists:
+                tableName: appointments
+      changes:
+        - createTable:
+            tableName: appointments
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: service_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_time
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: duration
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: numeric(12, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false

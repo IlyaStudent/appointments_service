@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-into-appointments
+      author: codekitchen
+      preConditions:
+        - onFail: MARK_RAN
+          rowCount:
+            expectedRows: 0
+            tableName: appointments
+      changes:
+        - insert:
+            tableName: appointments
+            columns:
+              - column:
+                  name: service_name
+                  value: "haircut"
+              - column:
+                  name: client_name
+                  value: "Oleg"
+              - column:
+                  name: date_time
+                  value: "2025-11-20 10:00:00"
+              - column:
+                  name: duration
+                  valueNumeric: 45
+              - column:
+                  name: price
+                  valueNumeric: 1200.00
+              - column:
+                  name: status
+                  value: "CREATED"
