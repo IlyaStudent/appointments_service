@@ -8,7 +8,9 @@ import com.example.appointments.feature.appointment.exceptions.InvalidStateTrans
 import com.example.appointments.feature.appointment.service.AppointmentService;
 import com.example.appointments.feature.appointment.utils.AppointmentModelAssembler;
 import jakarta.validation.Valid;
-import org.springframework.hateoas.CollectionModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.mediatype.problem.Problem;
@@ -16,8 +18,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -38,9 +38,20 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<AppointmentResponse>> getAllAppointments() {
-        List<AppointmentResponse> responses = appointmentService.getAllAppointments();
-        return assembler.toCollectionModel(responses);
+    public ResponseEntity<?> getAllAppointments(
+            @PageableDefault(size = 10, page = 0) Pageable pageable
+    ) {
+        Page<AppointmentResponse> responses = appointmentService.getAllAppointments(pageable);
+        return ResponseEntity.ok(assembler.toPageModel(responses, pageable));
+    }
+
+    @GetMapping(AppointmentEndpoints.SEARCH)
+    public ResponseEntity<?> searchAppointments(
+            @RequestParam String query,
+            @PageableDefault(size = 10, page = 0) Pageable pageable
+    ) {
+        Page<AppointmentResponse> responses = appointmentService.searchAppointments(query, pageable);
+        return ResponseEntity.ok(assembler.toPageModel(responses, pageable));
     }
 
     @GetMapping(AppointmentEndpoints.BY_ID)

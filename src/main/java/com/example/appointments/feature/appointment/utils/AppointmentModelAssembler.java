@@ -5,9 +5,12 @@ import com.example.appointments.feature.appointment.AppointmentStatus;
 import com.example.appointments.feature.appointment.controller.AppointmentController;
 import com.example.appointments.feature.appointment.dto.AppointmentResponse;
 import jakarta.annotation.Nonnull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
@@ -56,12 +59,42 @@ public class AppointmentModelAssembler implements RepresentationModelAssembler<A
                 .add(createBaseLink());
     }
 
+    public PagedModel<EntityModel<AppointmentResponse>> toPageModel(Page<AppointmentResponse> page, Pageable pageable) {
+        var models = page.getContent().stream()
+                .map(this::toModel)
+                .toList();
+
+        var pagedModel = PagedModel.of(
+                models,
+                new PagedModel.PageMetadata(
+                        page.getSize(),
+                        page.getNumber(),
+                        page.getTotalElements(),
+                        page.getTotalPages()
+                )
+        );
+
+        pagedModel.add(createBaseLink().withSelfRel());
+
+        if (page.hasNext()) {
+            pagedModel.add(linkTo(methodOn(AppointmentController.class)
+                    .getAllAppointments(pageable.next())).withRel("next"));
+        }
+
+        if (page.hasPrevious()) {
+            pagedModel.add(linkTo(methodOn(AppointmentController.class)
+                    .getAllAppointments(pageable.previousOrFirst())).withRel("prev"));
+        }
+
+        return pagedModel;
+    }
+
     private Link createSelfLink(Long appointmentId) {
         return linkTo(methodOn(AppointmentController.class).getAppointmentById(appointmentId)).withSelfRel();
     }
 
     private Link createBaseLink() {
-        return linkTo(methodOn(AppointmentController.class).getAllAppointments()).withRel(AppointmentEndpoints.BASE);
+        return linkTo(methodOn(AppointmentController.class).getAllAppointments(Pageable.unpaged())).withRel(AppointmentEndpoints.BASE);
     }
 
     private void addCommonLinks(EntityModel<AppointmentResponse> model, Long appointmentId) {
